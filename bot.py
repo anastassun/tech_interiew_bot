@@ -1,20 +1,26 @@
-from multiprocessing import context
-from turtle import update
-from telegram.ext import Updater, CommandHandler
+import logging, time
 
-from token import TOKEN
-def greet_user(update,context):
-    print('Вызван /start')
-    update.message.reply_text('Привет, пользователь! Ты вызвал команду /start')
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from handlers import info_view, talk_bot, user_contact, test
+import settings
 
+logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 def main():
-    mybot = Updater(TOKEN, use_context=True)
+    mybot = Updater(settings.BOT_API, use_context=True, request_kwargs=settings.PROXY)
+    
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler("start", greet_user))
+
+    dp.add_handler(CommandHandler('test', test))
+    dp.add_handler(CommandHandler('info', info_view))
+    dp.add_handler(MessageHandler(Filters.regex('^(Информация о боте)$'), info_view))
+    dp.add_handler(MessageHandler(Filters.regex('^(Начать тест)$'), test))
+    dp.add_handler(MessageHandler(Filters.contact, user_contact))
+    dp.add_handler(MessageHandler(Filters.text, talk_bot))
+    
+    logging.info(f"BOT starting... Date: {time.ctime()}")
     mybot.start_polling()
-    print("bot_online")
     mybot.idle()
 
-main(
-    
+if __name__ == '__main__':
+    main()
