@@ -1,4 +1,4 @@
-from utils import info_bot, main_keyboard
+from utils import info_bot, main_keyboard, vacansies_keyboard
 from test_question import list_quest, dict_answer
 
 def info_view(update, context):
@@ -31,3 +31,8 @@ def test(update, context):
             }
         }
     context.bot_data.update(payload)
+
+def vacansies_list(update, context):
+    print(update)
+    text = 'Выберите вакансию, которую рассматриваете'
+    update.message.reply_text(f'{text}',reply_markup= vacansies_keyboard())
