@@ -10,3 +10,14 @@ def main_keyboard():
         "Начать тест"]
         ])
 
+def vacansies_keyboard():
+    return ReplyKeyboardMarkup(
+        [ 
+        ["Java Developer"], 
+        ["Java 2 Developer"] , 
+        ["Android Develope"],
+        ['QA Automatio'],
+        ["IOS developer"],
+        ["SQL Developer"]
+        ]
+    )
