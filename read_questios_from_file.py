@@ -1,7 +1,8 @@
 import os
 
 def open_file(update, context):
-    name_file = ' '.join(context.args)
+    name_file = ''.join(context.args)
+    print(name_file)
     basedir = os.path.join('donwloads', name_file)
     doc = {}
     with open(basedir, 'r', encoding='utf-8') as f:

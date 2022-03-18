@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from utils import get_current_time, check_role
+from utils import check_role
 
 import settings
 
@@ -15,7 +15,7 @@ def get_or_create_user(db, update):
             "last_name" : update.effective_user.last_name,
             "username" : update.effective_user.username,
             "chat_id" : update.message.chat_id,
-            "date" : get_current_time(update.message.date),
+            "date" : update.message.date,
             "role" : check_role(update.effective_user.id)
         }
         db.users.insert_one(user)

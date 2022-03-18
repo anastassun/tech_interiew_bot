@@ -24,14 +24,9 @@ def vacansies_keyboard():
         ]
     )
 
-def get_current_time(times):
-    delta = datetime.timedelta(hours=3, minutes=0)
-    current_time = times + delta
-    times = datetime.datetime.strftime(current_time, "%d.%m.%y %H:%M")
-    return times
-
 def check_role(user_id):
+    admin = 'admin'
+    users = 'users'
     if user_id in settings.ADMIN:
-        return 'ADMIN'
-    else:
-        return 'users'
+        return admin
+    return users
