@@ -1,4 +1,5 @@
 import os
+import constants
 
 from utils import info_bot, main_keyboard, vacansies_keyboard
 from test_question import list_quest, dict_answer
@@ -7,8 +8,8 @@ from db import db, get_or_create_user
 def decor_func_registration(func):
     def wrapper(*args, **kwargs):
         update, context = args
-        get_or_create_user(db, update)
-        func(*args, **kwargs)
+        user = get_or_create_user(db, update)
+        func(update, context, user)
     return wrapper
 
 def info_view(update, context):
@@ -24,7 +25,7 @@ def user_contact(update, context):
     update.message.reply_text(f'Ваши контакты {contacts}')
 
 @decor_func_registration
-def test(update, context):
+def test(update, context, user):
     for index,key in enumerate(list_quest):
         questions = list_quest[index]
         answer = dict_answer[key]
@@ -47,11 +48,10 @@ def vacansies_list(update, context):
     update.message.reply_text(f'{text}',reply_markup= vacansies_keyboard())
 
 @decor_func_registration
-def save_document(update, context):
-    user = db.users.find_one({"user_id" : update.effective_user.id})
+def save_document(update, context, user):
     update.message.reply_text('Обрабатываем фaйл')
     file_name = os.path.join('donwloads', f"{update.message.caption}.txt")
-    if user['role'] == 'admin':
+    if user['role'] == constants.ADMIN:
         os.makedirs('donwloads', exist_ok=True)
         document_file = context.bot.getFile(update.message.document.file_id)
         document_file.download(file_name)

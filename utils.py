@@ -1,5 +1,5 @@
 from telegram import ReplyKeyboardMarkup
-import datetime
+import constants
 import settings
 
 def info_bot():
@@ -25,8 +25,6 @@ def vacansies_keyboard():
     )
 
 def check_role(user_id):
-    admin = 'admin'
-    users = 'users'
     if user_id in settings.ADMIN:
-        return admin
-    return users
+        return constants.ADMIN
+    return constants.USER
