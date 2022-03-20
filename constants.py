@@ -1,0 +1,2 @@
+USER = 'users'
+ADMIN = 'admin'
