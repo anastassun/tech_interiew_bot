@@ -9,4 +9,6 @@ __pycache__/
 read_questions_from_file.py
 Скрининг_Android.txt
 donwloads/
- 
+test_anketa.py
+test_states.py
+test.py
