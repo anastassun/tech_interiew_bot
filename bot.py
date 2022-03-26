@@ -2,9 +2,9 @@ import logging, time
 from tracemalloc import start
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
-from handlers import info_view, talk_bot, user_contact, vacansies_list, start
+from handlers import info_view, user_contact, vacansies_list, start,talk_bot
 import settings
-from anketa import anketa_start,anketa_name, anketa_rating, anketa_comment, anketa_skip, anketa_dontknow
+from anketa import anketa_start, anketa_name, anketa_rating, anketa_comment, anketa_skip, anketa_dontknow, question1, question2, question3, question4, question5, question6, question7 
 
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)
@@ -20,13 +20,21 @@ def main():
         ],
         states = {
             "name": [MessageHandler(Filters.text, anketa_name)],
-            "rating":[MessageHandler(Filters.regex('^ (1|2|3|4)$'), anketa_rating)],
             "comment": [
                 CommandHandler('skip', anketa_skip),
-                MessageHandler(Filters.text, anketa_comment)
-            ]
+                MessageHandler(Filters.text, anketa_comment),
+            ],
+        "question1": [MessageHandler(Filters.text, question1)],
+        "question2": [MessageHandler(Filters.text, question2)],
+        "question3": [MessageHandler(Filters.text, question3)],
+        "question4": [MessageHandler(Filters.text, question4)],
+        "question5": [MessageHandler(Filters.text, question5)],
+        "question6": [MessageHandler(Filters.text, question6)],
+        "question7": [MessageHandler(Filters.text, question7)],
+        "rating":[MessageHandler(Filters.text, anketa_rating)]
         },
-        fallbacks=[MessageHandler(Filters.text| Filters.video | Filters.photo | Filters.document
+        #fallbacks=[CommandHandler('help',help)]
+        fallbacks=[MessageHandler(Filters.video | Filters.photo | Filters.document
           | Filters.location, anketa_dontknow)]
     )
 
@@ -38,6 +46,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.regex('^(Начать тест)$'), vacansies_list))
     #dp.add_handler(MessageHandler(Filters.regex('^(На прохождения теста у вас есть 5 минут)$'), android_test))
     dp.add_handler(MessageHandler(Filters.contact, user_contact))
+    #dp.add_handler(MessageHandler(Filters.text, anketa_rating))
     dp.add_handler(MessageHandler(Filters.text, talk_bot))
     
     logging.info(f"BOT starting... Date: {time.ctime()}")
