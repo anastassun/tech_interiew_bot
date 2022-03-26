@@ -1,4 +1,6 @@
 from telegram import ReplyKeyboardMarkup
+import constants
+import settings
 
 def info_bot():
     with open('bot_info.txt', 'r', encoding='utf8') as f:
@@ -28,5 +30,7 @@ def vacansies_keyboard():
         ]
     )
 
-
-    
+def check_role(user_id):
+    if user_id in settings.ADMIN:
+        return constants.ADMIN
+    return constants.USER
