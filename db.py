@@ -45,4 +45,3 @@ def get_or_create_job(db, file):
 def info_vacan_in_company(db, vacan):
     job = db.jobs.find_one({'vacancy' : vacan})
     return job
-
