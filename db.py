@@ -22,9 +22,10 @@ def get_or_create_user(db, update):
         db.users.insert_one(user)
     return user
 
-def save_anketa(db, user_id, anketa_data):
-    user = db.users.find_one({"user_id" : user_id})
+def save_anketa(db, anketa_data):
+    user = db.users.find_one({"user_id" : anketa_data['user_id']})
     anketa_data['time'] = datetime.now()
+    del anketa_data['user_id']
     if not 'anketa' in user:
         db.users.update_one({'_id': user['_id']}, {'$set': {'anketa': [anketa_data]}})
     else:
@@ -45,3 +46,8 @@ def get_or_create_job(db, file):
 def info_vacan_in_company(db, vacan):
     job = db.jobs.find_one({'vacancy' : vacan})
     return job
+
+def user_profile(db, user_id, slot):
+    if db.users.find_one({'user_id': user_id, 'anketa.slot': slot}):
+        return True
+    return False

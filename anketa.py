@@ -1,6 +1,6 @@
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import ConversationHandler
-from db import db, info_vacan_in_company, save_anketa
+from db import db, info_vacan_in_company, user_profile
 from utils import del_use_num, new_button, format_dict, check_phone, main_keyboard
 from format_word_anketa_user import create_word_file
 
@@ -37,16 +37,20 @@ def discussion(update, context):
         return DISCUSSION
     else:
         context.user_data["slot"] = update.message.text
+        context.user_data['question'] = message['blank_form'][context.user_data["slot"]]
+        context.user_data['user_id'] = update.effective_user.id
+        if user_profile(db, context.user_data['user_id'], context.user_data["slot"]):
+            update.message.reply_text("Вы уже собеседовались на эту вакансию")
+            return DISCUSSION
         reply_keyboard = [[]]
-        reply_keyboard.append(message['blank_form'][context.user_data["slot"]])
+        reply_keyboard.append(context.user_data['question'])
         update.message.reply_text("Выберите вопрос",
                 reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
             )
         return QUESTION
 
 def quest(update, context):
-    message = info_vacan_in_company(db, context.user_data["vacan"])
-    num = message['blank_form'][context.user_data["slot"]]
+    num = context.user_data['question']
     old_num = del_use_num(context.user_data)
     new_num = new_button(num, old_num)
     sms = update.message.text
@@ -54,26 +58,23 @@ def quest(update, context):
         update.message.reply_text("Ошибка. Нажмите доступную кнопку!")
         return QUESTION
     else:
-        update.message.reply_text(message['blank_form'][context.user_data["slot"]][str(update.message.text)])
+        update.message.reply_text(context.user_data['question'][str(update.message.text)])
         context.user_data['num_answer'] = [str(sms)]
         return NUMQUESTION
 
 def num_qestion(update, context):
-    message = info_vacan_in_company(db, context.user_data["vacan"])
     num_answer = context.user_data['num_answer']
     context.user_data[num_answer[0]] = update.message.text
-    del context.user_data['num_answer']
-    dicts = context.user_data
-    num = message['blank_form'][context.user_data["slot"]]
-    old_num = del_use_num(dicts)
+    num = context.user_data['question']
+    old_num = del_use_num(context.user_data)
     new_buttons = new_button(num, old_num)
     reply_keyboard = [[]]
     reply_keyboard.append(new_buttons)
-
-    if len(message['blank_form'][context.user_data["slot"]])+3 != len(context.user_data):
+    if new_buttons: #Проверяет есть ли еще не нажатые кнопки, если кнопки есть True, если нету False.
         update.message.reply_text('Выберите следующий вопрос',reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True))
         return QUESTION
     else:
+        del context.user_data['num_answer']
         update.message.reply_text('Скажите свой номер телефона',reply_markup=ReplyKeyboardRemove(reply_keyboard, resize_keyboard=True))
         return CONTACT
 
@@ -89,10 +90,13 @@ def contact(update, context):
         return FINAL
 
 def final(update, context): 
+    try:
+        userprofile = format_dict(context.user_data)
+        create_word_file(userprofile)
+    except (FileNotFoundError, KeyError, AttributeError, TypeError) as err:
+        update.message.reply_text(f'Возникла ошибка {err}', reply_markup=main_keyboard())
+        return ConversationHandler.END
     update.message.reply_text('Все ответы записаны', reply_markup=main_keyboard())
-    done = format_dict(context.user_data)
-    save_anketa(db,update.effective_user.id, done)
-    create_word_file(done)
     return ConversationHandler.END
 
 def anketa_dontknow(update, context):

@@ -52,14 +52,14 @@ def format_dict(dicts):
     for key in dicts:
         if key.isdigit():
             answer[key] = dicts[key]
-    good_dict = {'vacan': dicts['vacan'], 'name' : dicts['name'],'phone': dicts['phone'], 'slot': dicts['slot'], 'answer': dict(answer)}
+    good_dict = {'user_id': dicts['user_id'], 'vacan': dicts['vacan'], 'name' : dicts['name'],'phone': dicts['phone'], 'slot': dicts['slot'], 'answer': dict(answer), 'question': dicts['question']}
     return good_dict
 
 def check_phone(phone):
     format_phone = re.sub(r'\b\D', '', phone)
     clear_phone = re.sub(r'[\ \(]?', '', format_phone)
     if re.findall(r'^[\+7|8]*?\d{10}$', clear_phone) or re.match(r'^\w+[\.]?(\w+)*\@(\w+\.)*\w{2,}$',phone):
-        return(bool(phone))
+        return (bool(phone))
     else: 
-        return(False) 
+        return False 
 
