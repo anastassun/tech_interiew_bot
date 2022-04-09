@@ -1,4 +1,5 @@
 from db import db, save_anketa
+from send_email import email_scripts
 from docx import Document
 from docx.shared import Pt
 import os
@@ -38,4 +39,6 @@ def create_word_file(result_anketa):
     #Добавим имя создаваемого файла в словарь отправляемый в базу
     result_anketa['userfile'] = name_file
     save_anketa(db, result_anketa)
+    email_scripts(result_anketa)
+
 
