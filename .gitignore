@@ -10,6 +10,7 @@ read_questions_from_file.py
 Скрининг_Android.txt
 donwloads/
 test_anketa.py
-test_states.py
+bot_test.py
 test.py
 class_anketa.py
+userfile/
