@@ -75,7 +75,7 @@ def discussion(update, context):
         reply_keyboard = [[]]
         reply_keyboard.append(context.user_data['question'])
         update.message.reply_text("Выберите вопрос",
-                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
+                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True)
             )
         return QUESTION
 

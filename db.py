@@ -49,9 +49,12 @@ def info_vacan_in_company(db, vacan):
 
 def user_name_and_phone(db, user_id):
     user = db.users.find_one({'user_id': user_id})
-    if not user['anketa'][0]['phone']:
+    try:
+        if user['anketa'][0]['phone']:
+            return user
+    except KeyError:
         return False
-    return user
+    return False
 
 def user_profile(db, user_id, slot):
     if db.users.find_one({'user_id': user_id, 'anketa.slot': slot}):
