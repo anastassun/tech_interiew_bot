@@ -1,4 +1,5 @@
 import logging, time
+from warnings import WarningMessage
 
 from test_states import statess
 from read_questios_from_file import open_file
@@ -14,15 +15,15 @@ def main():
     dp = mybot.dispatcher
 
     anketa = ConversationHandler(
-        entry_points=[CommandHandler('start', start),
-        MessageHandler(Filters.regex("^(QA Automation|Java Developer|Java 2 Developer|Android Developer|IOS developer|SQL Developer)$"), start)], 
+        entry_points=[MessageHandler(
+        Filters.regex("^(QA Automation|Java Developer|Java 2 Developer|Android Developer|IOS developer|SQL Developer)$"), 
+        start)], 
         states=statess,
         fallbacks=[MessageHandler(Filters.video | Filters.photo | Filters.document
           | Filters.location, anketa_dontknow)]
     )
 
     dp.add_handler(anketa)
-
     dp.add_handler(CommandHandler('info', info_view))
     dp.add_handler(CommandHandler('openfile', open_file))
     dp.add_handler(MessageHandler(Filters.regex('^(Информация о боте)$'), info_view))

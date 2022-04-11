@@ -47,6 +47,12 @@ def info_vacan_in_company(db, vacan):
     job = db.jobs.find_one({'vacancy' : vacan})
     return job
 
+def user_name_and_phone(db, user_id):
+    user = db.users.find_one({'user_id': user_id})
+    if not user['anketa'][0]['phone']:
+        return False
+    return user
+
 def user_profile(db, user_id, slot):
     if db.users.find_one({'user_id': user_id, 'anketa.slot': slot}):
         return True

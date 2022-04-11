@@ -1,29 +1,59 @@
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import ConversationHandler
-from db import db, info_vacan_in_company, user_profile
-from utils import del_use_num, new_button, format_dict, check_phone, main_keyboard
+from db import db, info_vacan_in_company, user_profile, user_name_and_phone
+from utils import del_use_num, new_button, format_dict, check_phone, main_keyboard, inline_keyboard
 from format_word_anketa_user import create_word_file
 
 NAME, DISCUSSION, QUESTION, NUMQUESTION, CONTACT, FINAL = range(6)
 
 def start (update, context):
-    update.message.reply_text (
-        'Привет, как вас зовут?',
-    reply_markup=ReplyKeyboardRemove()
-    ) 
     context.user_data["vacan"] = update.message.text
-    return NAME
+    user = user_name_and_phone(db, update.effective_user.id)
+    if user == False:
+        update.message.reply_text (
+            f'Привет, как вас зовут?',
+        reply_markup=ReplyKeyboardRemove())
+        return NAME
+    else:
+        context.user_data['old_name'] = user['anketa'][0]['name']
+        context.user_data['old_phone'] = user['anketa'][0]['phone']
+        update.message.reply_text(
+            f"Ваше имя/фамилия: {user['anketa'][0]['name']}",
+        reply_markup=inline_keyboard())
+        return NAME
+
+def yes(update, context):
+    update.callback_query.edit_message_text(text=f"Продолжим?")
+    if not 'name' in context.user_data:
+        context.user_data['name'] = context.user_data['old_name']
+        return NAME
+    if not 'phone' in context.user_data:
+        context.user_data['phone'] = context.user_data['old_phone']
+        return FINAL
+
+def no(update, context):
+    update.callback_query.edit_message_text(text=f"Скажите новые данные")
+    if not 'name' in context.user_data:
+        return NAME
+    if not 'phone' in context.user_data:
+        return CONTACT
 
 def name(update,context):
     user_name = update.message.text
-    if len(user_name.split()) < 2:
+    message = info_vacan_in_company(db, context.user_data["vacan"])
+    reply_keyboard = [[]]
+    reply_keyboard.append(message['blank_form'])
+    if len(user_name.split()) < 2 and not 'name' in context.user_data:
         update.message.reply_text("Пожалуйста введите имя и фамилию")
         return NAME
+    if 'name' in context.user_data:
+        update.message.reply_text(
+            "Выберите направление",
+            reply_markup=ReplyKeyboardMarkup(reply_keyboard)
+        )
+        return DISCUSSION
     else:
-        message = info_vacan_in_company(db, context.user_data["vacan"])
         context.user_data["name"] = user_name
-        reply_keyboard = [[]]
-        reply_keyboard.append(message['blank_form'])
         update.message.reply_text(
             "Выберите направление",
             reply_markup=ReplyKeyboardMarkup(reply_keyboard)
@@ -70,23 +100,32 @@ def num_qestion(update, context):
     new_buttons = new_button(num, old_num)
     reply_keyboard = [[]]
     reply_keyboard.append(new_buttons)
-    if new_buttons: #Проверяет есть ли еще не нажатые кнопки, если кнопки есть True, если нету False.
-        update.message.reply_text('Выберите следующий вопрос',reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True))
+    #Проверяет есть ли еще не нажатые кнопки, если кнопки есть True, если нету False.
+    if new_buttons:
+        update.message.reply_text('Выберите следующий вопрос',
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
         return QUESTION
     else:
         del context.user_data['num_answer']
-        update.message.reply_text('Скажите свой номер телефона',reply_markup=ReplyKeyboardRemove(reply_keyboard, resize_keyboard=True))
+        if 'old_phone' in context.user_data:
+            update.message.reply_text(f"Ваш телефон: {context.user_data['old_phone']}", 
+            reply_markup=inline_keyboard())
+            return CONTACT
+        update.message.reply_text('Скажите свой номер телефона',
+        reply_markup=ReplyKeyboardRemove(reply_keyboard, resize_keyboard=True))
         return CONTACT
 
 def contact(update, context):
     user_phone = update.message.text
     check = check_phone(user_phone)
     if not check:
-        update.message.reply_text("Неправильно набран номер")
+        update.message.reply_text("Неправильно набран номер",
+        reply_markup=ReplyKeyboardRemove())
         return CONTACT
     else:
         context.user_data['phone'] = update.message.text
-        update.message.reply_text("Место для комментария или отзыва.")
+        update.message.reply_text(f"Место для комментария или отзыва.", 
+                                    reply_markup=ReplyKeyboardRemove())
         return FINAL
 
 def final(update, context): 
