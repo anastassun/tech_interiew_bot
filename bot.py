@@ -1,13 +1,12 @@
-import logging, time
-from warnings import WarningMessage
+import logging.config
+import settings
 
+from logging_config import LOGGING_CONFIG
 from test_states import statess
 from read_questios_from_file import open_file
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 from handlers import info_view, talk_bot, vacansies_list, save_document
-import settings
 from anketa import start, anketa_dontknow
-logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 def main():
     mybot = Updater(settings.BOT_API, use_context=True)
@@ -31,7 +30,8 @@ def main():
     dp.add_handler(MessageHandler(Filters.document, save_document))
     dp.add_handler(MessageHandler(Filters.text, talk_bot))
 
-    logging.info(f"BOT starting... Date: {time.ctime()}")
+    logging.config.dictConfig(LOGGING_CONFIG)
+
     mybot.start_polling()
     mybot.idle()
 

@@ -1,3 +1,5 @@
+import logging
+
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup
 from telegram.ext import ConversationHandler
 from db import db, info_vacan_in_company, user_profile, user_name_and_phone
@@ -133,7 +135,8 @@ def final(update, context):
         userprofile = format_dict(context.user_data)
         create_word_file(userprofile)
     except (FileNotFoundError, KeyError, AttributeError, TypeError) as err:
-        update.message.reply_text(f'Возникла ошибка {err}', reply_markup=main_keyboard())
+        update.message.reply_text(f'Возникла ошибка', reply_markup=main_keyboard())
+        logging.error(f'KeyError {err} from db')
         return ConversationHandler.END
     update.message.reply_text('Все ответы записаны', reply_markup=main_keyboard())
     return ConversationHandler.END
