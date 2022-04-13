@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from utils import check_role
 from datetime import datetime
+import logging
 
 import settings
 
@@ -46,6 +47,16 @@ def get_or_create_job(db, file):
 def info_vacan_in_company(db, vacan):
     job = db.jobs.find_one({'vacancy' : vacan})
     return job
+
+def user_name_and_phone(db, user_id):
+    user = db.users.find_one({'user_id': user_id})
+    try:
+        if user['anketa'][0]['phone']:
+            return user
+    except KeyError as err:
+        logging.error(f'KeyError {err} from db')
+        return False
+    return False
 
 def user_profile(db, user_id, slot):
     if db.users.find_one({'user_id': user_id, 'anketa.slot': slot}):

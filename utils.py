@@ -1,4 +1,4 @@
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 import constants
 import settings
 import re
@@ -22,7 +22,7 @@ def vacansies_keyboard():
         ['QA Automation'],
         ["IOS developer"],
         ["SQL Developer"]
-        ]
+        ], one_time_keyboard=True
     )
 
 def check_role(user_id):
@@ -52,7 +52,9 @@ def format_dict(dicts):
     for key in dicts:
         if key.isdigit():
             answer[key] = dicts[key]
-    good_dict = {'user_id': dicts['user_id'], 'vacan': dicts['vacan'], 'name' : dicts['name'],'phone': dicts['phone'], 'slot': dicts['slot'], 'answer': dict(answer), 'question': dicts['question']}
+    good_dict = {'user_id': dicts['user_id'], 'vacan': dicts['vacan'], 
+                'name' : dicts['name'],'phone': dicts['phone'], 'slot': dicts['slot'], 
+                'answer': dict(answer), 'question': dicts['question']}
     return good_dict
 
 def check_phone(phone):
@@ -63,3 +65,11 @@ def check_phone(phone):
     else: 
         return False 
 
+def inline_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton('ДА', callback_data='ДА'),
+            InlineKeyboardButton('НЕТ', callback_data='НЕТ'),
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
