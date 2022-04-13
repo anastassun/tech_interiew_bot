@@ -22,7 +22,7 @@ pip install -r requirments.txt
 
 ### <br><b>Настройка</b>
 
-<b>Создайте файл settings.py и добавьте туда следующие параметры</b>
+<b>Создайте файл *settings.py* и добавьте туда следующие параметры</b>
     <details>
     <summary> Параметры: </summary></b>
 ```
