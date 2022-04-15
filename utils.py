@@ -1,4 +1,5 @@
 from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from open_console_file import open_file_txt, open_file_docx
 import constants
 import settings
 import re
@@ -73,3 +74,20 @@ def inline_keyboard():
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
+
+def info_format_file(name_file):
+    format_file = (name_file.split('.')[-1])
+    name_vacan = (name_file.split('.')[0])
+    if format_file == 'txt':
+        text_msg = open_file_txt(name_file, name_vacan)
+    if format_file == 'docx':
+        text_msg = open_file_docx(name_file, name_vacan)  
+    else:
+        text_msg = 'Данные не загружены в базу'
+    return text_msg
+
+def vac_keyboard(vac_list):
+    keyboard = [[]]
+    keyboard.append(vac_list)
+    return keyboard
+

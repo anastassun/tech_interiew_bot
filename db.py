@@ -33,12 +33,10 @@ def save_anketa(db, anketa_data):
         db.users.update_one({'_id': user['_id']}, {'$push': {'anketa': anketa_data}})
 
 def get_or_create_job(db, file):
-    job = db.jobs.find_one({'secret_key' : file['secret_key']})
+    job = db.jobs.find_one({'vacancy' : file['vacancy']})
     if not job:
         job = {
-            'secret_key' : file['secret_key'],
             'vacancy' : file['vacancy'],
-            'company' : file['company'],
             'blank_form' : file['blank_form']
             }
         db.jobs.insert_one(job)

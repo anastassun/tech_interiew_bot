@@ -4,9 +4,7 @@ from anketa import  name, discussion, quest, num_qestion, final, contact, yes, n
 NAME, DISCUSSION, QUESTION, NUMQUESTION, CONTACT, FINAL = range(6)
 
 statess={
-            NAME: [MessageHandler(Filters.text, name),
-            CallbackQueryHandler(yes, pattern='^' + 'ДА' + '$'),
-            CallbackQueryHandler(no, pattern='^' + 'НЕТ' + '$')],
+            NAME: [MessageHandler(Filters.text, name)],
             DISCUSSION: [MessageHandler(Filters.text, discussion)],
             QUESTION: [MessageHandler(Filters.text, quest)],
             NUMQUESTION: [MessageHandler(Filters.text, num_qestion)],

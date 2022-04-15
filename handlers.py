@@ -1,7 +1,7 @@
 import os
 import constants
 
-from utils import info_bot, main_keyboard, vacansies_keyboard
+from utils import info_bot, main_keyboard, vacansies_keyboard, info_format_file
 from db import db, get_or_create_user
 
 def decor_func_registration(func):
@@ -27,11 +27,13 @@ def vacansies_list(update, context):
 @decor_func_registration
 def save_document(update, context, user):
     update.message.reply_text('Обрабатываем фaйл')
-    file_name = os.path.join('donwloads', f"{update.message.caption}.txt")
+    name_file = update.message.document.file_name
+    file_name = os.path.join('donwloads', name_file)
     if user['role'] == constants.ADMIN:
         os.makedirs('donwloads', exist_ok=True)
         document_file = context.bot.getFile(update.message.document.file_id)
         document_file.download(file_name)
-        update.message.reply_text(f'Администратор, файл сохранен под именем {update.message.caption}.txt')
+        text_msg = info_format_file(name_file)
+        update.message.reply_text(f'Администратор, {text_msg}')
     else:
         update.message.reply_text('Ошибка доступа')
